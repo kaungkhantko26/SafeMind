@@ -915,6 +915,14 @@ html[data-theme="light"] :where(.dashboard-nav .nav-link.is-active,
   box-shadow: 0 0 0 3px rgba(169, 211, 94, .28), 0 8px 20px rgba(104, 141, 43, .22) !important;
 }
 
+html[data-theme="light"] body.dashboard-page .dashboard-section-nav button:is(.is-active, [aria-selected="true"]),
+html[data-theme="light"] body.dashboard-page .dashboard-section-nav > select {
+  color: #1F2937 !important;
+  background: #A9D35E !important;
+  border-color: #8DB547 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .28), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}
+
 html[data-theme="light"] body:not(.splash) :where(.primary-btn, .primary-button, .primary-link,
 .nav-btn, .auth-button, button.primary-action, .report-form button[type="submit"],
 .education-chat-form button[type="submit"], .terms-accept) {
