@@ -15,7 +15,6 @@ const status = document.getElementById("simpleStatus");
 const answer = document.getElementById("simpleAnswer");
 const tutorial = document.getElementById("simpleTutorial");
 const tutorialVideo = document.getElementById("simpleTutorialVideo");
-const emergency = document.getElementById("simpleEmergency");
 const nlpServiceUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
 const locale = () => document.documentElement.lang === "my" ? "my" : "en";
 const say = (en, my) => locale() === "my" ? my : en;
@@ -108,21 +107,6 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-const menuToggle = document.querySelector("[data-simple-menu-toggle]");
-const menu = document.getElementById("simpleMenu");
-function setMenuOpen(open) {
-  menuToggle.setAttribute("aria-expanded", String(open));
-  menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  menu.classList.toggle("is-open", open);
-}
-menuToggle.addEventListener("click", () => setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true"));
-document.addEventListener("click", (event) => {
-  if (menu.classList.contains("is-open") && !menu.contains(event.target) && !menuToggle.contains(event.target)) setMenuOpen(false);
-});
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && menu.classList.contains("is-open")) { setMenuOpen(false); menuToggle.focus(); }
-});
-
 const THEME_KEY = "safemind-theme";
 function applyTheme(theme, persist = true) {
   const next = theme === "light" ? "light" : "dark";
@@ -141,7 +125,4 @@ document.getElementById("simpleAgain").addEventListener("click", () => { answer.
 document.querySelectorAll("[data-open-simple-tutorial],[data-tutorial-topic]").forEach((button) => button.addEventListener("click", () => show(tutorial)));
 document.querySelectorAll("[data-close-simple-tutorial]").forEach((button) => button.addEventListener("click", () => close(tutorial)));
 tutorial?.addEventListener("close", () => tutorialVideo?.pause());
-document.querySelectorAll("[data-open-emergency]").forEach((button) => button.addEventListener("click", () => show(emergency)));
-document.querySelectorAll("[data-close-emergency]").forEach((button) => button.addEventListener("click", () => close(emergency)));
-document.querySelector("[data-emergency-check]").addEventListener("click", () => { close(emergency); input.focus(); form.scrollIntoView({behavior:"smooth"}); });
 initLanguage();

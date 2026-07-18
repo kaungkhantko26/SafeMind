@@ -17,25 +17,20 @@
   <a class="skip-link" href="#simpleChecker">Skip to scam checker</a>
   <header class="simple-header">
     <a class="brand" href="/simple"><img src="/assets/green-logo.png" alt=""><span>SafeMind Simple</span></a>
-    <div class="simple-header-actions">
+    <nav class="simple-header-actions" aria-label="Simple mode controls">
       <button type="button" data-open-simple-tutorial>How to use</button>
-      <button type="button" class="simple-menu-toggle" data-simple-menu-toggle aria-expanded="false" aria-controls="simpleMenu" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </button>
-      <div class="simple-menu" id="simpleMenu">
-        <div class="simple-menu-theme" role="group" aria-label="Color theme">
-          <button type="button" data-set-theme="light" aria-pressed="false" title="Light mode">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
-            <span>Light</span>
-          </button>
-          <button type="button" data-set-theme="dark" aria-pressed="false" title="Dark mode">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path></svg>
-            <span>Dark</span>
-          </button>
-        </div>
-        <button type="button" data-language-toggle title="Switch language">မြန်မာ</button>
+      <div class="simple-nav-theme" role="group" aria-label="Color theme">
+        <button type="button" data-set-theme="light" aria-pressed="false" title="Light mode">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+          <span>Light</span>
+        </button>
+        <button type="button" data-set-theme="dark" aria-pressed="false" title="Dark mode">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path></svg>
+          <span>Dark</span>
+        </button>
       </div>
-    </div>
+      <button type="button" data-language-toggle title="Switch language">မြန်မာ</button>
+    </nav>
   </header>
 
   <main>
@@ -68,8 +63,6 @@
     </section>
   </main>
 
-  <button type="button" class="simple-emergency" data-open-emergency>🚨 Someone is asking me for money</button>
-
   <dialog class="simple-dialog" id="simpleTutorial" aria-labelledby="simpleTutorialTitle">
     <button type="button" class="dialog-close dialog-exit" data-close-simple-tutorial aria-label="Exit tutorial">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4m4-4H9"/></svg>
@@ -91,14 +84,6 @@
       <li>Use “REPORT THIS” if you want an administrator to review it.</li>
     </ol>
     <a href="/?changeAge=1">Change age range or page style</a>
-  </dialog>
-
-  <dialog class="simple-dialog emergency" id="simpleEmergency" aria-labelledby="simpleEmergencyTitle">
-    <button type="button" class="dialog-close" data-close-emergency aria-label="Close emergency help">×</button>
-    <p class="stop">STOP</p>
-    <h2 id="simpleEmergencyTitle">Do not send money yet.</h2>
-    <ul><li>Do not share an OTP or password.</li><li>Call the company using its official phone number.</li><li>Ask a trusted family member for help.</li></ul>
-    <button type="button" data-emergency-check>Check the message now</button>
   </dialog>
 
   <footer><a href="/eduai">Learn about scams</a><a href="/?changeAge=1">Change page style</a><a href="/login">Login</a></footer>
