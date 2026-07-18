@@ -1,5 +1,6 @@
 import { initLanguage } from "./language.js";
 import { isScamResult } from "./result-verdict.js";
+import "./theme-toggle.js";
 
 const TERMS_KEY = "safemind-terms-choice-v3";
 const EXPERIENCE_KEY = "safemind-page-experience-v1";
@@ -106,20 +107,6 @@ form.addEventListener("submit", async (event) => {
     checkButton.textContent = say("CHECK NOW", "ယခု စစ်ဆေးရန်");
   }
 });
-
-const THEME_KEY = "safemind-theme";
-function applyTheme(theme, persist = true) {
-  const next = theme === "light" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  document.documentElement.style.colorScheme = next;
-  document.querySelectorAll("[data-set-theme]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.setTheme === next)));
-  if (persist) { try { localStorage.setItem(THEME_KEY, next); } catch { /* The choice still applies on this page when storage is blocked. */ } }
-}
-document.querySelectorAll("[data-set-theme]").forEach((button) => button.addEventListener("click", () => applyTheme(button.dataset.setTheme)));
-window.addEventListener("storage", (event) => {
-  if (event.key === THEME_KEY && (event.newValue === "light" || event.newValue === "dark")) applyTheme(event.newValue, false);
-});
-applyTheme(document.documentElement.dataset.theme, false);
 
 document.getElementById("simpleAgain").addEventListener("click", () => { answer.hidden = true; input.focus(); form.scrollIntoView({behavior:"smooth"}); });
 document.querySelectorAll("[data-open-simple-tutorial],[data-tutorial-topic]").forEach((button) => button.addEventListener("click", () => show(tutorial)));

@@ -100,7 +100,7 @@ function buildThemeSwitcher(extraClass = "") {
 function createThemeSwitchers() {
   if (document.querySelector("[data-theme-switcher]") || document.body.classList.contains("splash")) return;
 
-  const navigationTargets = document.querySelectorAll(".nav-actions, .mobile-nav-actions");
+  const navigationTargets = document.querySelectorAll(".nav-actions, .mobile-nav-actions, .simple-header-actions");
   navigationTargets.forEach((target) => target.prepend(buildThemeSwitcher("theme-switcher--nav")));
 
   const dashboardSidebar = document.querySelector(".dashboard-sidebar");
