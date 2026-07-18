@@ -11,6 +11,16 @@ html[data-theme="dark"] .simple-experience button:not(.how-link):not([data-set-t
 @media (max-width:700px) { .simple-header .brand span { display:none; }.simple-experience main { padding-top:45px; }.simple-answer-buttons { grid-template-columns:1fr; } }
 .simple-header-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:10px; }
 .simple-header-actions .theme-switcher { margin:0; }
+body.simple-experience .simple-header-actions .theme-switcher button[aria-pressed="true"] {
+  color:#20300F !important;
+  background:#A9D35E !important;
+  border-color:#8DB547 !important;
+}
+body.simple-experience .simple-header-actions .theme-switcher button[aria-pressed="false"] {
+  color:#303247 !important;
+  background:#FFFFFF !important;
+  border-color:#D8DCE5 !important;
+}
 
 @media (max-width:700px) {
   .simple-header { align-items:flex-start; flex-wrap:wrap; gap:10px; padding:10px 12px; }
