@@ -11,10 +11,12 @@ html[data-theme="dark"] .simple-experience button:not(.how-link) { color:#20300F
 @media (max-width:700px) { .simple-header .brand span { display:none; }.simple-experience main { padding-top:45px; }.simple-answer-buttons { grid-template-columns:1fr; } }
 .simple-header-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:10px; }
 .simple-nav-theme { display:flex; align-items:center; gap:8px; }
-.simple-nav-theme button { display:flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap; }
+.simple-nav-theme button { display:flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap; transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,opacity .18s ease; }
 .simple-nav-theme svg { width:22px; height:22px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="true"] { color:#20300F !important; background:#8ADE41 !important; border-color:#78A934 !important; }
-body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="false"] { color:#20300F !important; background:#A9D35E !important; border-color:#8DB547 !important; }
+body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="true"] { color:#183008 !important; background:#8ADE41 !important; border-color:#56851F !important; box-shadow:0 0 0 3px rgba(138,222,65,.28),inset 0 -3px rgba(48,92,12,.16); opacity:1; }
+body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="true"]::after { content:"✓"; font-size:16px; font-weight:900; line-height:1; }
+body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="false"] { color:var(--muted) !important; background:var(--surface-raised) !important; border-color:var(--border) !important; box-shadow:none; opacity:.76; }
+body.simple-experience .simple-nav-theme button[data-set-theme][aria-pressed="false"]:hover { color:var(--text) !important; border-color:#8DB547 !important; opacity:1; }
 
 @media (max-width:700px) {
   .simple-header { align-items:flex-start; flex-wrap:wrap; gap:10px; padding:10px 12px; }
