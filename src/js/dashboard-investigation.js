@@ -48,6 +48,14 @@ if (main && workspace && form) {
   const setStatus = (message, state = "") => { status.textContent = message; status.dataset.state = state; };
   const formatBytes = (bytes) => bytes < 1024 ? `${bytes} B` : bytes < 1048576 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / 1048576).toFixed(1)} MB`;
 
+  function focusMobileInvestigation() {
+    if (!window.matchMedia("(max-width: 720px)").matches || workspace.hidden || input.disabled || document.querySelector("dialog[open]")) return;
+    window.requestAnimationFrame(() => {
+      form.scrollIntoView({ behavior: "auto", block: "start" });
+      input.focus({ preventScroll: true });
+    });
+  }
+
   function openResultsDialog() {
     if (!activeResult || resultsDialog.open) return;
     resultsDialog.showModal();
@@ -289,7 +297,11 @@ if (main && workspace && form) {
     recognition.onresult = (event) => { quickInput.value = event.results[0][0].transcript; quickReadiness.sync(); saveState(); };
     recognition.start();
   });
-  window.addEventListener("dashboard:sectionchange", () => saveState());
+  window.addEventListener("dashboard:sectionchange", (event) => {
+    saveState();
+    if (event.detail?.section === "investigation") focusMobileInvestigation();
+  });
+  window.addEventListener("pageshow", focusMobileInvestigation);
   form.addEventListener("change", (event) => { if (event.target.name === "dashboardScanType") { resetAnalyzeButton({ clearResult: true }); updateType(event.target.value); } });
   input.addEventListener("input", () => { resetAnalyzeButton({ clearResult: true }); saveState(); });
   quickInput.addEventListener("input", saveState);
