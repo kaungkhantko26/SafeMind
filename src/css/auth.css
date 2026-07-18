@@ -146,11 +146,13 @@ input{
 .auth-card h1{
     margin:0;
     font-size:28px;
+    text-align:center;
 }
 
 .auth-card .subcopy{
     margin:10px 0 26px;
     color:var(--muted);
+    text-align:center;
 }
 
 .auth-form{
