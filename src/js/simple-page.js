@@ -20,6 +20,16 @@ const nlpServiceUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
 const locale = () => document.documentElement.lang === "my" ? "my" : "en";
 const say = (en, my) => locale() === "my" ? my : en;
 
+function focusMobileChecker() {
+  if (!window.matchMedia("(max-width: 700px)").matches || input.disabled || document.querySelector("dialog[open]")) return;
+  window.requestAnimationFrame(() => {
+    form.scrollIntoView({ behavior:"auto", block:"start" });
+    input.focus({ preventScroll:true });
+  });
+}
+
+window.addEventListener("pageshow", focusMobileChecker);
+
 function detectType(value) {
   const text = value.trim();
   if (/^(?:from|subject|to):/im.test(text) && /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/i.test(text)) return "email";
