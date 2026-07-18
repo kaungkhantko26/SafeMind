@@ -28,8 +28,6 @@ function focusMobileChecker() {
   });
 }
 
-window.addEventListener("pageshow", focusMobileChecker);
-
 function detectType(value) {
   const text = value.trim();
   if (/^(?:from|subject|to):/im.test(text) && /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/i.test(text)) return "email";
@@ -41,6 +39,30 @@ function detectType(value) {
 
 function show(dialog) { if (dialog && !dialog.open) dialog.showModal(); }
 function close(dialog) { if (dialog?.open) dialog.close(); }
+
+async function autoplayTutorialVideo() {
+  if (!tutorialVideo) return;
+  tutorialVideo.muted = false;
+  try {
+    await tutorialVideo.play();
+  } catch {
+    // Mobile browsers commonly block unprompted audio. Keep autoplay working
+    // while leaving the native controls available for the user to enable sound.
+    tutorialVideo.muted = true;
+    try { await tutorialVideo.play(); } catch { /* Controls remain available when autoplay is blocked entirely. */ }
+  }
+}
+
+function openTutorial() {
+  show(tutorial);
+  void autoplayTutorialVideo();
+}
+
+function handleSimpleModeEntry() {
+  if (window.matchMedia("(max-width: 700px)").matches) openTutorial();
+}
+
+window.addEventListener("pageshow", handleSimpleModeEntry);
 
 async function analyzeWithNlpService(content) {
   const scanType = detectType(content);
@@ -119,7 +141,10 @@ form.addEventListener("submit", async (event) => {
 });
 
 document.getElementById("simpleAgain").addEventListener("click", () => { answer.hidden = true; input.focus(); form.scrollIntoView({behavior:"smooth"}); });
-document.querySelectorAll("[data-open-simple-tutorial],[data-tutorial-topic]").forEach((button) => button.addEventListener("click", () => show(tutorial)));
+document.querySelectorAll("[data-open-simple-tutorial],[data-tutorial-topic]").forEach((button) => button.addEventListener("click", openTutorial));
 document.querySelectorAll("[data-close-simple-tutorial]").forEach((button) => button.addEventListener("click", () => close(tutorial)));
-tutorial?.addEventListener("close", () => tutorialVideo?.pause());
+tutorial?.addEventListener("close", () => {
+  tutorialVideo?.pause();
+  focusMobileChecker();
+});
 initLanguage();
