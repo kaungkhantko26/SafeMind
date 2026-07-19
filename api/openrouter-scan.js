@@ -1,5 +1,6 @@
 const OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_OPENROUTER_MODEL = "openai/gpt-5.6-luna-pro";
+const DEFAULT_OPENROUTER_MODEL = "openai/gpt-4o";
+const DEFAULT_FALLBACK_MODEL = "google/gemini-2.5-flash";
 const DEFAULT_TIMEOUT_MS = 38_000;
 const MAX_RETRIES = 2;
 
@@ -69,7 +70,12 @@ export function openRouterScanConfig(env = process.env) {
   const apiKey = String(env.OPENROUTER_API_KEY || "").trim();
   if (!apiKey || apiKey.length < 20 || /\s/.test(apiKey)) return null;
   const model = clean(env.OPENROUTER_MODEL || DEFAULT_OPENROUTER_MODEL, 120);
-  return { apiKey, model: model || DEFAULT_OPENROUTER_MODEL };
+  const fallbackModels = String(env.OPENROUTER_MODELS || env.OPENROUTER_FALLBACK_MODEL || DEFAULT_FALLBACK_MODEL)
+    .split(",")
+    .map((item) => clean(item, 120))
+    .filter(Boolean);
+  const models = [...new Set([model || DEFAULT_OPENROUTER_MODEL, ...fallbackModels])].slice(0, 4);
+  return { apiKey, model: models[0], models };
 }
 
 export function isOpenRouterScanConfigured(env = process.env) {
@@ -130,7 +136,7 @@ function parseAssessment(text) {
 }
 
 function retryable(status) {
-  return status === 408 || status === 409 || status === 429 || status >= 500;
+  return status === 0 || status === 408 || status === 409 || status === 429 || status >= 500;
 }
 
 function retryDelay(response, attempt) {
@@ -140,8 +146,12 @@ function retryDelay(response, attempt) {
 }
 
 export async function scanWithOpenRouter(scanType, content, options = {}) {
+  const optionModel = clean(options.model || DEFAULT_OPENROUTER_MODEL, 120);
+  const optionModels = Array.isArray(options.models)
+    ? options.models.map((item) => clean(item, 120)).filter(Boolean)
+    : [];
   const configured = options.apiKey
-    ? { apiKey: String(options.apiKey), model: clean(options.model || DEFAULT_OPENROUTER_MODEL, 120) }
+    ? { apiKey: String(options.apiKey), model: optionModel, models: [...new Set([optionModel, ...optionModels])] }
     : openRouterScanConfig(options.env);
   if (!configured) {
     throw Object.assign(new Error("OPENROUTER_API_KEY is not configured."), { code: "OPENROUTER_NOT_CONFIGURED", statusCode: 503 });
@@ -149,9 +159,10 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
 
   const fetchImpl = options.fetchImpl || fetch;
   const timeoutMs = Math.max(2_000, Math.min(55_000, Number(options.timeoutMs) || DEFAULT_TIMEOUT_MS));
+  const models = configured.models?.length ? configured.models : [configured.model];
   const requestBody = {
-    model: configured.model,
-    max_tokens: 420,
+    ...(models.length > 1 ? { models } : { model: models[0] }),
+    max_tokens: 140,
     temperature: 0.1,
     stream: false,
     messages: [
@@ -172,8 +183,8 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
     },
     plugins: [{ id: "response-healing" }],
     provider: {
+      allow_fallbacks: true,
       require_parameters: true,
-      sort: "throughput",
       preferred_max_latency: { p50: 4, p90: 10 }
     }
   };
@@ -189,9 +200,10 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
         method: "POST",
         headers: {
           Authorization: `Bearer ${configured.apiKey}`,
+          Accept: "application/json",
           "Content-Type": "application/json",
-          "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
-          "X-Title": "SafeMind Scam Detection"
+          "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind.kaungkhantko.studio",
+          "X-OpenRouter-Title": "SafeMind Scam Detection"
         },
         body: JSON.stringify(requestBody),
         signal: AbortSignal.timeout(remainingMs)
@@ -223,7 +235,15 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
       };
     } catch (error) {
       lastError = error;
+      console.warn(JSON.stringify({
+        event: "openrouter_scan_attempt_error",
+        attempt: attempt + 1,
+        code: clean(error?.code, 80) || "unknown",
+        detail: clean(error?.message, 180) || "Unknown scan error"
+      }));
       if (attempt >= MAX_RETRIES || !retryable(Number(error?.statusCode) || 0)) break;
+      const delayMs = Math.min(retryDelay(null, attempt), Math.max(0, deadline - Date.now() - 2_000));
+      if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
   throw Object.assign(new Error("The OpenRouter scam scanner is temporarily unavailable."), {

@@ -901,7 +901,7 @@ export default async function handler(req, res) {
   if (method === "GET") {
     return jsonResponse(res, 200, {
       status: "ok",
-      model: isOpenRouterScanConfigured() ? (process.env.OPENROUTER_MODEL || "openai/gpt-5.6-luna-pro") : "unavailable",
+      model: isOpenRouterScanConfigured() ? (process.env.OPENROUTER_MODEL || "openai/gpt-4o") : "unavailable",
       provider: isOpenRouterScanConfigured() ? "openrouter" : "unavailable",
       scan_types: [...SUPPORTED_SCAN_TYPES]
     });

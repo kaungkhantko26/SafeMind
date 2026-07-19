@@ -1,7 +1,7 @@
 import { runSecurityScan } from "./spam-check.js";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_OPENROUTER_MODEL = "openai/gpt-5.6-luna-pro";
+const DEFAULT_OPENROUTER_MODEL = "openai/gpt-4o";
 const DEFAULT_OPENROUTER_FALLBACK_MODEL = "google/gemini-2.5-flash";
 const PRIVATE_REASONING = Object.freeze({ enabled: true, effort: "low", exclude: true });
 const SUPPORTED_TYPES = new Set(["auto", "message", "link", "email", "phone"]);
@@ -139,15 +139,20 @@ async function openRouterRequest({ apiKey, models, payload, stream = false }) {
           method: "POST",
           headers: {
             Authorization: `Bearer ${apiKey}`,
+            Accept: "application/json",
             "Content-Type": "application/json",
-            "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
-            "X-Title": "SafeMind Scam Education"
+            "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind.kaungkhantko.studio",
+            "X-OpenRouter-Title": "SafeMind Scam Education"
           },
           body: JSON.stringify({
             ...payload,
             model,
             stream,
-            reasoning: payload.reasoning || PRIVATE_REASONING
+            reasoning: payload.reasoning || PRIVATE_REASONING,
+            provider: payload.provider || {
+              allow_fallbacks: true,
+              preferred_max_latency: { p50: 4, p90: 10 }
+            }
           }),
           signal: AbortSignal.timeout(Math.max(1_000, Math.min(OPENROUTER_TIMEOUT_MS, deadline - Date.now())))
         });

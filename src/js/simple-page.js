@@ -66,23 +66,36 @@ window.addEventListener("pageshow", handleSimpleModeEntry);
 
 async function analyzeWithNlpService(content) {
   const scanType = detectType(content);
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 45_000);
-  try {
-    const response = await fetch(nlpServiceUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "same-origin",
-      cache: "no-store",
-      signal: controller.signal,
-      body: JSON.stringify({ scan_type: scanType, content })
-    });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || result.detail || "The OpenAI analysis service is unavailable.");
-    return result;
-  } finally {
-    window.clearTimeout(timeout);
+  const retryableStatuses = new Set([408, 409, 425, 429, 502, 503, 504]);
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), attempt === 0 ? 42_000 : 12_000);
+    try {
+      const response = await fetch(nlpServiceUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        cache: "no-store",
+        signal: controller.signal,
+        body: JSON.stringify({ scan_type: scanType, content })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok) return result;
+      const error = new Error(result.error || result.detail || "The AI analysis service is unavailable.");
+      error.status = response.status;
+      lastError = error;
+      if (!retryableStatuses.has(response.status) || attempt === 1) throw error;
+    } catch (error) {
+      lastError = error;
+      const networkFailure = error?.name === "AbortError" || error instanceof TypeError;
+      if (attempt === 1 || (!networkFailure && !retryableStatuses.has(Number(error?.status)))) throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 500));
   }
+  throw lastError || new Error("The AI analysis service is unavailable.");
 }
 
 form.addEventListener("submit", async (event) => {

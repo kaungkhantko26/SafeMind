@@ -42,11 +42,15 @@ assert.equal(capturedRequest.url, "https://openrouter.ai/api/v1/chat/completions
 assert.equal(capturedRequest.request.headers.Authorization, "Bearer sk-test-key-that-is-long-enough-for-validation");
 assert.equal(capturedRequest.body.response_format.type, "json_schema");
 assert.equal(capturedRequest.body.response_format.json_schema.strict, true);
+assert.equal(capturedRequest.body.provider.allow_fallbacks, true);
 assert.equal(capturedRequest.body.provider.require_parameters, true);
-assert.equal(capturedRequest.body.provider.sort, "throughput");
+assert.equal(capturedRequest.body.provider.sort, undefined);
 assert.deepEqual(capturedRequest.body.provider.preferred_max_latency, { p50: 4, p90: 10 });
-assert.equal(capturedRequest.body.max_tokens, 420);
+assert.equal(capturedRequest.body.max_tokens, 140);
+assert.equal(capturedRequest.body.model, "gpt-test-scan");
+assert.equal(capturedRequest.body.models, undefined);
 assert.deepEqual(capturedRequest.body.plugins, [{ id: "response-healing" }]);
+assert.equal(capturedRequest.request.headers["X-OpenRouter-Title"], "SafeMind Scam Detection");
 assert.match(capturedRequest.body.messages[1].content, /private number/);
 assert.equal(result.provider, "openrouter");
 assert.equal(result.analysis_source, "openrouter_structured_scan");
@@ -65,6 +69,30 @@ await runSecurityScan("message", authorityMessage, {
   fetchImpl: fakeFetch
 });
 assert.equal(fetchCalls, 2, "Normal website scans must request a fresh OpenRouter result.");
+
+let networkRetryCalls = 0;
+const transientNetworkFetch = async (...args) => {
+  networkRetryCalls += 1;
+  if (networkRetryCalls === 1) throw new TypeError("temporary connection reset");
+  return fakeFetch(...args);
+};
+await runSecurityScan("message", "A fresh message used to verify transient connection retry behavior.", {
+  apiKey: "sk-test-key-that-is-long-enough-for-validation",
+  model: "gpt-test-scan",
+  fetchImpl: transientNetworkFetch,
+  bypassCache: true
+});
+assert.equal(networkRetryCalls, 2, "Transient network failures must retry before returning an error.");
+
+await runSecurityScan("message", "Verify that OpenRouter receives an ordered model fallback route.", {
+  apiKey: "sk-test-key-that-is-long-enough-for-validation",
+  model: "gpt-test-scan",
+  models: ["fallback-test-model"],
+  fetchImpl: fakeFetch,
+  bypassCache: true
+});
+assert.deepEqual(capturedRequest.body.models, ["gpt-test-scan", "fallback-test-model"]);
+assert.equal(capturedRequest.body.model, undefined);
 
 const failingFetch = async () => ({
   ok: false,
