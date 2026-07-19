@@ -38,11 +38,9 @@ if (main && workspace && form) {
   const typeCopy = {
     message: ["Suspicious message", "Paste the suspicious message exactly as received..."],
     link: ["Website address", "Paste the complete website address, including https://..."],
-    phone: ["Phone number", "Enter the unfamiliar phone number..."],
-    email: ["Email address or email content", "Paste the sender address or suspicious email content..."],
-    qr: ["QR destination or context", "Paste the link from the QR code, or upload a screenshot..."],
-    screenshot: ["Screenshot context", "Briefly describe where this screenshot came from (optional)..."]
+    email: ["Email address or email content", "Paste the sender address or suspicious email content..."]
   };
+  const visibleTypes = new Set(Object.keys(typeCopy));
 
   const currentType = () => form.querySelector('input[name="dashboardScanType"]:checked')?.value || "message";
   const setStatus = (message, state = "") => { status.textContent = message; status.dataset.state = state; };
@@ -88,21 +86,20 @@ if (main && workspace && form) {
   }
 
   function updateType(type) {
-    const radio = form.querySelector(`input[name="dashboardScanType"][value="${type}"]`);
+    const selectedType = visibleTypes.has(type) ? type : "message";
+    const radio = form.querySelector(`input[name="dashboardScanType"][value="${selectedType}"]`);
     if (radio) radio.checked = true;
-    const [label, placeholder] = typeCopy[type] || typeCopy.message;
+    const [label, placeholder] = typeCopy[selectedType];
     document.getElementById("dashboardScanLabel").textContent = label;
     input.placeholder = placeholder;
-    const imageOnly = type === "qr" || type === "screenshot";
-    fileInput.accept = imageOnly ? "image/png,image/jpeg,image/webp" : "image/png,image/jpeg,image/webp,text/plain,.txt,.eml";
-    uploadArea.classList.toggle("is-recommended", imageOnly);
+    fileInput.accept = "image/png,image/jpeg,image/webp,text/plain,.txt,.eml";
+    uploadArea.classList.remove("is-recommended");
     saveState();
   }
 
   function detectType(value) {
     const text = String(value || "").trim();
     if (/^https?:\/\//i.test(text) || /\bwww\./i.test(text)) return "link";
-    if (/^[+\d][\d\s().-]{6,}$/.test(text)) return "phone";
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return "email";
     return "message";
   }
@@ -153,7 +150,6 @@ if (main && workspace && form) {
       imagePayload = { data_url: dataUrl, mime_type: file.type };
       previewImage.src = dataUrl;
       previewImage.hidden = false;
-      if (["qr", "screenshot"].includes(currentType()) === false) updateType("screenshot");
     } else {
       input.value = (await readFile(file, "text")).slice(0, 10000);
     }
@@ -262,7 +258,7 @@ if (main && workspace && form) {
     results.hidden = true;
     setStatus("SafeMind is analyzing your evidence...", "pending");
     try {
-      const result = await runProgress(() => imagePayload && ["qr", "screenshot"].includes(type) ? analyzeImage(type, content) : analyzeText(type, content));
+      const result = await runProgress(() => imagePayload ? analyzeImage("screenshot", content) : analyzeText(type, content));
       renderResult(result);
       setStatus("Investigation complete.", "success");
       const { data } = await supabase?.auth.getSession() || {};
@@ -289,7 +285,7 @@ if (main && workspace && form) {
     event.preventDefault();
     openInvestigation(trigger.dataset.investigationType || currentType());
   });
-  document.getElementById("quickScanUpload").addEventListener("click", () => { resetAnalyzeButton({ clearResult: true }); openInvestigation("screenshot"); fileInput.click(); });
+  document.getElementById("quickScanUpload").addEventListener("click", () => { resetAnalyzeButton({ clearResult: true }); openInvestigation("message"); fileInput.click(); });
   document.getElementById("quickScanVoice").addEventListener("click", () => {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) { quickInput.placeholder = "Voice input is not supported in this browser."; return; }

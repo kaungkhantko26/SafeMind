@@ -371,6 +371,7 @@ Object.assign(translations, {
   "Safety tip": "လုံခြုံရေးအကြံပြုချက်",
   "Quick AI Scan": "AI အမြန်စစ်ဆေးမှု",
   "Paste a message, website, phone number, or email. You can add a screenshot in the investigation workspace.": "စာတို၊ ဝက်ဘ်ဆိုက်၊ ဖုန်းနံပါတ် သို့မဟုတ် အီးမေးလ်ကို ထည့်ပါ။ စစ်ဆေးမှုနေရာတွင် စခရင်ရှော့လည်း ထည့်နိုင်သည်။",
+  "Paste a suspicious message, website, or email for AI analysis.": "AI ဖြင့် စစ်ဆေးရန် သံသယဖြစ်ဖွယ် စာတို၊ ဝက်ဘ်ဆိုက် သို့မဟုတ် အီးမေးလ်ကို ထည့်ပါ။",
   "Paste suspicious content here...": "သံသယဖြစ်ဖွယ် အကြောင်းအရာကို ဤနေရာတွင် ထည့်ပါ...",
   "Upload": "ဖိုင်တင်ရန်",
   "Voice": "အသံဖြင့်",

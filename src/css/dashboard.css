@@ -1893,7 +1893,7 @@ body.dashboard-page .empty-state { max-width:58ch; }
   .investigation-heading { align-items:flex-start; flex-direction:column; }
   .unified-scanner,.scanner-progress { padding:24px 16px; }
   .scanner-analyze { position:sticky; z-index:5; bottom:12px; }
-  .scanner-type-picker > div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .scanner-type-picker > div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
   .scanner-findings { grid-template-columns:1fr; }
   .scanner-findings .finding-wide,.finding-actions { grid-column:1; }
   .finding-actions { flex-direction:column; }

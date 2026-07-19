@@ -89,7 +89,7 @@
 
                     <article class="dashboard-focus dashboard-quick-scan" aria-labelledby="dashboardFocusTitle">
                         <span class="dashboard-focus-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="m9.5 12 1.6 1.6 3.8-4"/></svg></span>
-                        <div><p class="eyebrow">Quick AI Scan</p><h2 id="dashboardFocusTitle">Check something suspicious</h2><p>Paste a message, website, phone number, or email. You can add a screenshot in the investigation workspace.</p></div>
+                        <div><p class="eyebrow">Quick AI Scan</p><h2 id="dashboardFocusTitle">Check something suspicious</h2><p>Paste a suspicious message, website, or email for AI analysis.</p></div>
                         <label class="sr-only" for="quickScanInput">Suspicious content</label>
                         <textarea id="quickScanInput" rows="3" maxlength="10000" placeholder="Paste suspicious content here..."></textarea>
                         <div class="quick-scan-actions"><button type="button" class="secondary-action" id="quickScanUpload">Upload</button><button type="button" class="secondary-action" id="quickScanVoice">Voice</button><button type="button" class="primary-button" id="quickScanInvestigate" data-input-action disabled>Investigate</button></div>
@@ -101,7 +101,7 @@
                     <div class="investigation-heading"><div><p class="eyebrow">AI security workspace</p><h2 id="investigationTitle">AI Investigation</h2><span>Your latest result stays available while you use the dashboard.</span></div></div>
                     <form class="unified-scanner" id="dashboardScannerForm">
                         <fieldset class="scanner-type-picker"><legend>Choose input type</legend><div role="radiogroup" aria-label="Scanner input type">
-                            <label><input type="radio" name="dashboardScanType" value="message" checked><span>Message</span></label><label><input type="radio" name="dashboardScanType" value="link"><span>Website</span></label><label><input type="radio" name="dashboardScanType" value="phone"><span>Phone</span></label><label><input type="radio" name="dashboardScanType" value="email"><span>Email</span></label><label><input type="radio" name="dashboardScanType" value="qr"><span>QR</span></label><label><input type="radio" name="dashboardScanType" value="screenshot"><span>Screenshot</span></label>
+                            <label><input type="radio" name="dashboardScanType" value="message" checked><span>Message</span></label><label><input type="radio" name="dashboardScanType" value="link"><span>Website</span></label><label><input type="radio" name="dashboardScanType" value="email"><span>Email</span></label>
                         </div></fieldset>
                         <label for="dashboardScanInput" id="dashboardScanLabel">Suspicious message</label>
                         <textarea id="dashboardScanInput" rows="7" maxlength="10000" placeholder="Paste the suspicious message exactly as received..."></textarea>
